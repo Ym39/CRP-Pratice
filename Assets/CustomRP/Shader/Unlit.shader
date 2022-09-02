@@ -3,7 +3,7 @@ Shader "Custom RP/Unlit"
     Properties
     {
         _BaseMap("Texture", 2D) = "white" {}
-        _BaseColor("Color", color) = (1.0,1.0,1.0,1.0)
+        [HDR] _BaseColor("Color", color) = (1.0,1.0,1.0,1.0)
         _Cutoff("Alpha Cutoff", Range(0.0, 1.0)) = 0.5
         [Toggle(_CLIPPING)] _Clipping ("Alpha Clipping", Float) = 0
 
@@ -13,6 +13,10 @@ Shader "Custom RP/Unlit"
     }
     SubShader
     {
+        HLSLINCLUDE
+        #include "Common.hlsl"
+        #include "UnlitInput.hlsl"
+        ENDHLSL
         Pass
         {
             Blend [_SrcBlend] [_DstBlend]
@@ -44,6 +48,23 @@ Shader "Custom RP/Unlit"
             #pragma vertex ShadowCasterPassVertex
             #pragma fragment ShadowCasterPassFragment
             #include "ShadowCasterPass.hlsl"
+            ENDHLSL
+        }
+
+        Pass
+        {
+            Tags
+            {
+                "LightMode" = "Meta"
+            }
+
+            Cull Off
+
+            HLSLPROGRAM
+            #pragma target 3.5
+            #pragma vertex MetaPassVertex
+            #pragma fragment MetaPassFragment
+            #include "MetaPass.hlsl"
             ENDHLSL
         }
     }
